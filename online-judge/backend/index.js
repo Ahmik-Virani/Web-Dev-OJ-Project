@@ -1,15 +1,19 @@
-const express = require('express');
+import express from 'express'
 const app = express();
-const {DBConnection} = require('./database/db.js');
-const User = require('./models/Users.js')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
-const cookieParser = require('cookie-parser')
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+import DBConnection from './database/db.js';
+import User from './models/Users.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv'
+import router from './routes/routes.js';
+import cors from 'cors';
+
 dotenv.config();
 
 //middleware
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -21,6 +25,8 @@ DBConnection();
 app.get('/', (req, res) => {
     res.send("Welcome to today's class");
 });
+
+app.use('/', router)
 
 app.get('/home', (req, res) => {
     res.send("Welcome to home");

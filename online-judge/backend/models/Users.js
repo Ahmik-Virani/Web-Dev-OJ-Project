@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     firstname: {
@@ -25,4 +25,5 @@ const userSchema = new mongoose.Schema({
 
 //Export through mongoose model
 //Never keep plural, mongoose makes it plural automatically
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('user', userSchema);
+export default User
