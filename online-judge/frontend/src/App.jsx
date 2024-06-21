@@ -1,41 +1,72 @@
-import './index.css'
-import user_icon from './assets/person.png'
-import email_icon from './assets/email.png'
-import password_icon from './assets/password.png'
-import { useState } from 'react'
-import { uploadUserData } from './services/api'
+import React from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import './index.css';
+import user_icon from './assets/person.png';
+import email_icon from './assets/email.png';
+import password_icon from './assets/password.png';
+import { useState } from 'react';
 
 function App() {
-
   const [action, setAction] = useState("Login");
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if ((action === "Sign Up" && firstname && lastname && userEmail && userPassword) || (action === "Login" && userEmail && userPassword)) {
-      const data = new FormData();
-      if (action === "Sign Up") {
-        data.append('firstname', firstname);
-        data.append('lastname', lastname);
-      }
-      data.append('email', userEmail);
-      data.append('password', userPassword);
+      const data = {
+        firstname,
+        lastname,
+        email: userEmail,
+        password: userPassword,
+      };
 
       try {
+        setLoading(true);
         const response = await uploadUserData(data);
         console.log(response);
+        setLoading(false);
+        toast.success('Action successful!');
+        navigate('/home'); // Redirect to /home
       } catch (error) {
         console.error("Error uploading user data:", error);
+        toast.error(error.message || 'An error occurred.'); // Display error message
+        setLoading(false);
       }
     } else {
-      console.log("Please fill out all fields.");
+      toast.error("Please fill out all fields."); // Display error message for missing fields
     }
+  };
+
+  const uploadUserData = async (data) => {
+    let url = 'http://localhost:8000/login';
+    if (action === "Sign Up") {
+      url = 'http://localhost:8000/register';
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${errorText}`);
+    }
+
+    return response.json();
   };
 
   return (
     <div className='container'>
+      <Toaster /> {/* Add Toaster component here */}
       <div className='header'>
         <div className='text'>{action}</div>
         <div className='underline'></div>
@@ -83,7 +114,9 @@ function App() {
         </div>
       </div>
       <div className="submit-container">
-        <div className="submit-button" onClick={handleSubmit}>Submit</div>
+        <div className="submit-button" onClick={handleSubmit}>
+          {loading ? "Submitting..." : "Submit"}
+        </div>
       </div>
       <div className="submit-container">
         <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => setAction("Sign Up")}>Sign Up</div>
@@ -93,4 +126,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
