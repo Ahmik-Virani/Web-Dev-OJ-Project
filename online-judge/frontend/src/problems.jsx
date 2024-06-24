@@ -41,7 +41,8 @@ function Problems() {
                     <tbody>
                         {problems.map((problem) => (
                             <tr key={problem._id}>
-                                <td>{problem.problem_title}</td>
+                                <Link to={`/view_problem/${problem._id}`}>{problem.problem_title}</Link>
+                                {/* //<td>{problem.problem_title}</td> */}
                                 <td>
                                     <Link to={`/update_problem/${problem._id}`} className='btn btn-success'>Update</Link>
                                     <button className='btn btn-danger' onClick={(e) => handleDelete(problem._id)}>Delete</button>

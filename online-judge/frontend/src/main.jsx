@@ -19,7 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/problem" element={<Problems />} />
         <Route path="/create_problem" element={<Create_Problems />} />
         <Route path="/update_problem/:id" element={<Update_Problems />} />
-        <Route path="/view_problem" element={<View_Problem />} />
+        <Route path="/view_problem/:id" element={<View_Problem />} />
       </Routes>
     </Router>
   </React.StrictMode>,
