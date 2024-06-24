@@ -13,7 +13,7 @@ function Create_Problems() {
     const Submit = (e) => {
         e.preventDefault();
         try {
-            axios.post("http://localhost:8000/createProblem", { problem_title, problem_statement, sample_input, sample_output });
+            axios.post("http://localhost:8000/create_problem", { problem_title, problem_statement, sample_input, sample_output });
             console.log("Added successfully");
             navigate('/problem');
         } catch (error) {

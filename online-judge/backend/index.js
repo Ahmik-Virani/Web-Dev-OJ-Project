@@ -112,87 +112,73 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Create Problem
-app.post('/createProblem', async (req, res) => {
+app.get('/problem', async (req, res) => {
   try {
-    const { problem_title, problem_statement, sample_input, sample_output } = req.body;
-
-    if (!(problem_title && problem_statement)) {
-      res.status(400).send("Please enter all the valid fields");
-    }
-
-    const problem = await Problem.create({
-      problem_title,
-      problem_statement,
-      sample_input,
-      sample_output
-    });
-
-    res.json({
-      message: "Successfully created problem",
-      success: true,
-      problem,
-    });
-
+      const problems = await Problem.find({});
+      res.json(problems);
   } catch (error) {
-    console.log("Error while creating the problem : " + error);
-    res.status(400).send("Internal Server Error");
+      console.log("Not able to fetch Problem data : " + error);
+      res.status(500).json({ message: "Error fetching problems" });
   }
 });
 
-// Fetch Problems
-app.get('/problems', async (req, res) => {
+app.get('/get_problem/:id', async (req, res) => {
+  const id = req.params.id;
   try {
-    const problems = await Problem.find({});
-    res.json({
-      message: "Successfully fetched problems",
-      success: true,
-      problems,
-    });
+      const problem = await Problem.findById({_id : id});
+      if (!problem) {
+          return res.status(404).json({ message: "Problem not found" });
+      }
+      res.json(problem);
   } catch (error) {
-    console.log("Error while fetching problems : " + error);
-    res.status(500).send("Internal Server Error");
+      console.log("Not able to fetch problem data : " + error);
+      res.status(500).json({ message: "Error fetching problem" });
+  }
+});
+
+// Create Problem
+app.post('/create_problem', async (req, res) => {
+  try {
+      const { problem_title, problem_statement, sample_input, sample_output } = req.body;
+
+      if (!(problem_title && problem_statement)) {
+          return res.status(400).send("Please enter all the fields");
+      }
+
+      const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output });
+
+      res.status(201).json({
+          message: "Successfully created",
+          success: true,
+          problem,
+      });
+  } catch (error) {
+      console.log("Error reaching create : " + error);
+      res.status(500).json({ message: "Error creating problem" });
   }
 });
 
 // Update Problem
-app.put('/updateProblem/:id', async (req, res) => {
+app.put('/update_problem/:id', async (req, res) => {
+  const id = req.params.id;
   try {
-    const { id } = req.params;
-    const { problem_title, problem_statement, sample_input, sample_output } = req.body;
-
-    const problem = await Problem.findByIdAndUpdate(id, {
-      problem_title,
-      problem_statement,
-      sample_input,
-      sample_output
-    }, { new: true });
-
-    res.json({
-      message: "Successfully updated problem",
-      success: true,
-      problem,
-    });
+      const problem = await Problem.findByIdAndUpdate({ _id: id }, { problem_title: req.body.problem_title, problem_statement: req.body.problem_statement, sample_input: req.body.sample_input, sample_output: req.body.sample_output });
   } catch (error) {
-    console.log("Error while updating the problem : " + error);
-    res.status(500).send("Internal Server Error");
+      console.log("Not able to fetch problem data : " + error);
+      res.status(500).json({ message: "Error fetching problem" });
   }
-});
+})
 
 // Delete Problem
-app.delete('/deleteProblem/:id', async (req, res) => {
+app.delete('/delete_problem/:id', async (req, res)=> {
+  const id = req.params.id;
   try {
-    const { id } = req.params;
-    await Problem.findByIdAndDelete(id);
-    res.json({
-      message: "Successfully deleted problem",
-      success: true,
-    });
+      const problem = await Problem.findByIdAndDelete({ _id: id });
   } catch (error) {
-    console.log("Error while deleting the problem : " + error);
-    res.status(500).send("Internal Server Error");
+      console.log("Not able to fetch problem data : " + error);
+      res.status(500).json({ message: "Error fetching problem" });
   }
-});
+})
 
 app.listen(8000, () => {
   console.log("Server is listening on port 8000");
