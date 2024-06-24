@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import Problems from './problems.jsx';
 import Update_Problems from './update_problem.jsx';
 import Create_Problems from './create_problem.jsx';
+import View_Problem from './view_problem.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/problem" element={<Problems />} />
         <Route path="/create_problem" element={<Create_Problems />} />
         <Route path="/update_problem/:id" element={<Update_Problems />} />
+        <Route path="/view_problem" element={<View_Problem />} />
       </Routes>
     </Router>
   </React.StrictMode>,
