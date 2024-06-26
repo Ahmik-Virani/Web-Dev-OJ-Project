@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import './index.css';
 import user_icon from './assets/person.png';
 import email_icon from './assets/email.png';
 import password_icon from './assets/password.png';
-import { useState } from 'react';
 
 function App() {
   const [action, setAction] = useState("Login");
@@ -31,14 +30,14 @@ function App() {
         console.log(response);
         setLoading(false);
         toast.success('Action successful!');
-        navigate('/home'); // Redirect to /home
+        navigate('/home');
       } catch (error) {
         console.error("Error uploading user data:", error);
-        toast.error(error.message || 'An error occurred.'); // Display error message
+        toast.error(error.message || 'An error occurred.');
         setLoading(false);
       }
     } else {
-      toast.error("Please fill out all fields."); // Display error message for missing fields
+      toast.error("Please fill out all fields.");
     }
   };
 
@@ -65,65 +64,108 @@ function App() {
   };
 
   return (
-    <div className='container'>
-      <Toaster /> {/* Add Toaster component here */}
-      <div className='header'>
-        <div className='text'>{action}</div>
-        <div className='underline'></div>
-      </div>
-      <div className='inputs'>
-        {action === "Login" ? null : (
-          <>
-            <div className='input'>
-              <img src={user_icon} alt='user icon' />
-              <input 
-                type='text' 
-                placeholder='First Name' 
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)} 
-              />
+    <section className="vh-100 gradient-custom">
+      <div className="container py-5 h-100">
+        <div className="row d-flex justify-content-center align-items-center h-100">
+          <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div className="card bg-dark text-white" style={{ borderRadius: '1rem' }}>
+              <div className="card-body p-5 text-center">
+
+                <div className="mb-md-5 mt-md-4 pb-5">
+
+                  <h2 className="fw-bold mb-2 text-uppercase">{action}</h2>
+                  <p className="text-white-50 mb-5">
+                    {action === "Login" ? "Please enter your login and password!" : "Please fill out the form to sign up!"}
+                  </p>
+
+                  {action === "Sign Up" && (
+                    <>
+                      <div className="form-outline form-white mb-4">
+                        <input
+                          type="text"
+                          id="typeFirstnameX"
+                          className="form-control form-control-lg"
+                          placeholder="First Name"
+                          value={firstname}
+                          onChange={(e) => setFirstname(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-outline form-white mb-4">
+                        <input
+                          type="text"
+                          id="typeLastnameX"
+                          className="form-control form-control-lg"
+                          placeholder="Last Name"
+                          value={lastname}
+                          onChange={(e) => setLastname(e.target.value)}
+                        />
+                      </div>
+                    </>
+                  )}
+                  <div className="form-outline form-white mb-4">
+                    <input
+                      type="email"
+                      id="typeEmailX"
+                      className="form-control form-control-lg"
+                      placeholder="Email"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-outline form-white mb-4">
+                    <input
+                      type="password"
+                      id="typePasswordX"
+                      className="form-control form-control-lg"
+                      placeholder="Password"
+                      value={userPassword}
+                      onChange={(e) => setUserPassword(e.target.value)}
+                    />
+                  </div>
+
+                  <p className="small mb-5 pb-lg-2">
+                    <a className="text-white-50" href="#!">Forgot password?</a>
+                  </p>
+
+                  <button
+                    data-mdb-button-init
+                    data-mdb-ripple-init
+                    className="btn btn-outline-light btn-lg px-5"
+                    type="submit"
+                    onClick={handleSubmit}
+                  >
+                    {loading ? "Submitting..." : "Submit"}
+                  </button>
+
+                  <div className="d-flex justify-content-center text-center mt-4 pt-1">
+                    <a href="#!" className="text-white"><i className="fab fa-facebook-f fa-lg"></i></a>
+                    <a href="#!" className="text-white"><i className="fab fa-twitter fa-lg mx-4 px-2"></i></a>
+                    <a href="#!" className="text-white"><i className="fab fa-google fa-lg"></i></a>
+                  </div>
+
+                </div>
+
+                <div>
+                  <p className="mb-0">
+                    {action === "Login" ? "Don't have an account?" : "Already have an account?"}
+                    <a
+                      href="#!"
+                      className="text-white-50 fw-bold"
+                      onClick={() => setAction(action === "Login" ? "Sign Up" : "Login")}
+                    >
+                      {action === "Login" ? " Sign Up" : " Login"}
+                    </a>
+                  </p>
+                </div>
+
+              </div>
             </div>
-            <div className='input'>
-              <img src={user_icon} alt='user icon' />
-              <input 
-                type='text' 
-                placeholder='Last Name' 
-                value={lastname}
-                onChange={(e) => setLastname(e.target.value)} 
-              />
-            </div>
-          </>
-        )}
-        <div className='input'>
-          <img src={email_icon} alt='email icon' />
-          <input 
-            type='email' 
-            placeholder='Email Id' 
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)} 
-          />
-        </div>
-        <div className='input'>
-          <img src={password_icon} alt='password icon' />
-          <input 
-            type='password' 
-            placeholder='Password' 
-            value={userPassword}
-            onChange={(e) => setUserPassword(e.target.value)} 
-          />
+          </div>
         </div>
       </div>
-      <div className="submit-container">
-        <div className="submit-button" onClick={handleSubmit}>
-          {loading ? "Submitting..." : "Submit"}
-        </div>
-      </div>
-      <div className="submit-container">
-        <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => setAction("Sign Up")}>Sign Up</div>
-        <div className={action === "Sign Up" ? "submit gray" : "submit"} onClick={() => setAction("Login")}>Login</div>
-      </div>
-    </div>
-  )
+      <Toaster />
+    </section>
+  );
 }
 
 export default App;
