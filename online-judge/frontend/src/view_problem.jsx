@@ -64,6 +64,10 @@ function View_Problem() {
 
                             <textarea className="form-control mb-3" rows="15" placeholder="Enter your code here"></textarea>
 
+                            <textarea className="form-control mb-3" rows="3" placeholder="Sample Input"></textarea>
+
+                            <textarea className="form-control mb-3" rows="3" placeholder="Sample Output"></textarea>
+
                             <div className="d-flex justify-content-end">
                                 <button className="btn btn-primary mr-2">Run</button>
                                 <button className="btn btn-success">Submit</button>

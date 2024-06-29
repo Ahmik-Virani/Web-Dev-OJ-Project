@@ -9,6 +9,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import router from './routes/routes.js';
 import cors from 'cors';
+import generateFile from './compiler_codes/generateFile.js';
+import executeCpp from './compiler_codes/executeCpp.js';
 
 const app = express();
 dotenv.config();
@@ -114,47 +116,47 @@ app.post('/login', async (req, res) => {
 
 app.get('/problem', async (req, res) => {
   try {
-      const problems = await Problem.find({});
-      res.json(problems);
+    const problems = await Problem.find({});
+    res.json(problems);
   } catch (error) {
-      console.log("Not able to fetch Problem data : " + error);
-      res.status(500).json({ message: "Error fetching problems" });
+    console.log("Not able to fetch Problem data : " + error);
+    res.status(500).json({ message: "Error fetching problems" });
   }
 });
 
 app.get('/get_problem/:id', async (req, res) => {
   const id = req.params.id;
   try {
-      const problem = await Problem.findById({_id : id});
-      if (!problem) {
-          return res.status(404).json({ message: "Problem not found" });
-      }
-      res.json(problem);
+    const problem = await Problem.findById({ _id: id });
+    if (!problem) {
+      return res.status(404).json({ message: "Problem not found" });
+    }
+    res.json(problem);
   } catch (error) {
-      console.log("Not able to fetch problem data : " + error);
-      res.status(500).json({ message: "Error fetching problem" });
+    console.log("Not able to fetch problem data : " + error);
+    res.status(500).json({ message: "Error fetching problem" });
   }
 });
 
 // Create Problem
 app.post('/create_problem', async (req, res) => {
   try {
-      const { problem_title, problem_statement, sample_input, sample_output } = req.body;
+    const { problem_title, problem_statement, sample_input, sample_output } = req.body;
 
-      if (!(problem_title && problem_statement)) {
-          return res.status(400).send("Please enter all the fields");
-      }
+    if (!(problem_title && problem_statement)) {
+      return res.status(400).send("Please enter all the fields");
+    }
 
-      const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output });
+    const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output });
 
-      res.status(201).json({
-          message: "Successfully created",
-          success: true,
-          problem,
-      });
+    res.status(201).json({
+      message: "Successfully created",
+      success: true,
+      problem,
+    });
   } catch (error) {
-      console.log("Error reaching create : " + error);
-      res.status(500).json({ message: "Error creating problem" });
+    console.log("Error reaching create : " + error);
+    res.status(500).json({ message: "Error creating problem" });
   }
 });
 
@@ -162,22 +164,45 @@ app.post('/create_problem', async (req, res) => {
 app.put('/update_problem/:id', async (req, res) => {
   const id = req.params.id;
   try {
-      const problem = await Problem.findByIdAndUpdate({ _id: id }, { problem_title: req.body.problem_title, problem_statement: req.body.problem_statement, sample_input: req.body.sample_input, sample_output: req.body.sample_output });
+    const problem = await Problem.findByIdAndUpdate({ _id: id }, { problem_title: req.body.problem_title, problem_statement: req.body.problem_statement, sample_input: req.body.sample_input, sample_output: req.body.sample_output });
   } catch (error) {
-      console.log("Not able to fetch problem data : " + error);
-      res.status(500).json({ message: "Error fetching problem" });
+    console.log("Not able to fetch problem data : " + error);
+    res.status(500).json({ message: "Error fetching problem" });
   }
 })
 
 // Delete Problem
-app.delete('/delete_problem/:id', async (req, res)=> {
+app.delete('/delete_problem/:id', async (req, res) => {
   const id = req.params.id;
   try {
-      const problem = await Problem.findByIdAndDelete({ _id: id });
+    const problem = await Problem.findByIdAndDelete({ _id: id });
   } catch (error) {
-      console.log("Not able to fetch problem data : " + error);
-      res.status(500).json({ message: "Error fetching problem" });
+    console.log("Not able to fetch problem data : " + error);
+    res.status(500).json({ message: "Error fetching problem" });
   }
+})
+
+app.post('/run', async (req, res) => {
+  const { language = 'cpp', code } = req.body;
+
+  if (code === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "Empty code body",
+    });
+  }
+
+  try {
+    const filePath = await generateFile(language, code);
+    const output = await executeCpp(filePath);
+    res.send({ filePath, output });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error" + error.message,
+    })
+  }
+
 })
 
 app.listen(8000, () => {
