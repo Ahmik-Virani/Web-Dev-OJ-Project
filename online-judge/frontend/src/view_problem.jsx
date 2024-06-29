@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 function View_Problem() {
     const [problem_title, set_problem_title] = useState('');
     const [problem_statement, set_problem_statement] = useState('');
     const [sample_input, set_sample_input] = useState('');
     const [sample_output, set_sample_output] = useState('');
+
+    const [code, setCode] = useState(`
+    #include <iostream> 
+      
+    int main() { 
+        std::cout << "Hello World!"; 
+            
+        return 0; 
+    }`);
+    const [output, setOutput] = useState(''); // State to store output
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -27,7 +36,24 @@ function View_Problem() {
 
         fetchProblem();
     }, [id]);
-    
+
+    const handleSubmit = async () => {
+        // Reset output state to clear previous output
+        setOutput('');
+
+        const payload = {
+            language: 'cpp',
+            code
+        };
+
+        try {
+            const { data } = await axios.post('http://localhost:8000/run', payload);
+            setOutput(data.output); // Update output state with fetched data
+        } catch (error) {
+            console.log(error.response);
+        }
+    }
+
     return (
         <div className="container-fluid vh-100 bg-light">
             <div className="row">
@@ -62,15 +88,62 @@ function View_Problem() {
                                 <option value='java'>Java</option>
                             </select>
 
-                            <textarea className="form-control mb-3" rows="15" placeholder="Enter your code here"></textarea>
+                            <div className="container mt-4">
+                                <div className="bg-light shadow-md w-100 mb-4" style={{ maxWidth: '600px', height: '300px', overflowY: 'auto' }}>
+                                    <textarea
+                                        className="form-control code-editor"
+                                        value={code}
+                                        onChange={(e) => setCode(e.target.value)}
+                                        style={{
+                                            fontFamily: '"Fira Code", "Fira Mono", monospace',
+                                            fontSize: 12,
+                                            outline: 'none',
+                                            border: 'none',
+                                            backgroundColor: '#f7fafc',
+                                            height: '100%',
+                                            overflowY: 'auto',
+                                            resize: 'none'
+                                        }}
+                                    />
+                                </div>
+                            </div>
 
-                            <textarea className="form-control mb-3" rows="3" placeholder="Sample Input"></textarea>
+                            <div className="container mt-4">
+                                <textarea
+                                    className="form-control mb-3"
+                                    placeholder="Enter sample input here"
+                                    style={{
+                                        fontSize: 12,
+                                        rows: '5',
+                                        outline: 'none',
+                                        border: '1px solid #ced4da', // Adding border style
+                                        borderRadius: '4px', // Adding border radius
+                                        padding: '8px', // Adding padding
+                                        height: '200px', // Increasing height slightly
+                                        overflowY: 'auto',
+                                    }}
+                                />
 
-                            <textarea className="form-control mb-3" rows="3" placeholder="Sample Output"></textarea>
+                                <textarea
+                                    className="form-control"
+                                    placeholder="Sample output will display here"
+                                    value={output} // Bind output state here
+                                    readOnly // Make it read-only
+                                    style={{
+                                        fontSize: 12,
+                                        outline: 'none',
+                                        border: '1px solid #ced4da', // Adding border style
+                                        borderRadius: '4px', // Adding border radius
+                                        padding: '8px', // Adding padding
+                                        height: '200px', // Increasing height slightly
+                                        overflowY: 'auto',
+                                    }}
+                                />
+                            </div>
 
                             <div className="d-flex justify-content-end">
                                 <button className="btn btn-primary mr-2">Run</button>
-                                <button className="btn btn-success">Submit</button>
+                                <button className="btn btn-success" onClick={handleSubmit}>Submit</button>
                             </div>
                         </div>
                     </div>
