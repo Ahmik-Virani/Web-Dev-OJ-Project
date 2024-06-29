@@ -11,6 +11,7 @@ import router from './routes/routes.js';
 import cors from 'cors';
 import generateFile from './compiler_codes/generateFile.js';
 import executeCpp from './compiler_codes/executeCpp.js';
+import generateInputFile from './compiler_codes/generateInputFile.js';
 
 const app = express();
 dotenv.config();
@@ -183,7 +184,7 @@ app.delete('/delete_problem/:id', async (req, res) => {
 })
 
 app.post('/run', async (req, res) => {
-  const { language = 'cpp', code } = req.body;
+  const { language = 'cpp', code, input } = req.body;
 
   if (code === undefined) {
     return res.status(400).json({
@@ -194,8 +195,9 @@ app.post('/run', async (req, res) => {
 
   try {
     const filePath = await generateFile(language, code);
-    const output = await executeCpp(filePath);
-    res.send({ filePath, output });
+    const inputPath = await generateInputFile(input);
+    const output = await executeCpp(filePath, inputPath);
+    res.send({ filePath, output, inputPath });
   } catch (error) {
     res.status(500).json({
       success: false,

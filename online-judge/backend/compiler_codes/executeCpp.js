@@ -12,14 +12,14 @@ if(!fs.existsSync(outputPath)) {
     fs.mkdirSync(outputPath, {recursive: true});
 }
 
-const executeCpp = (filePath) => {
+const executeCpp = (filePath, inputPath) => {
     const jobId = path.basename(filePath).split('.')[0];
     const filename = `${jobId}.out`;
     const outPath = path.join(outputPath, filename);
 
     return new Promise((resolve, reject) => {
         exec(
-            `g++ ${filePath} -o ${outPath} && ${outPath}`, 
+            `g++ ${filePath} -o ${outPath} && ${outPath} < ${inputPath}`, 
             (error, stdout, stderr) => {
                 if(error){
                     reject(error);

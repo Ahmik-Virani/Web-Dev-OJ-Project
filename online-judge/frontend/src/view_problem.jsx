@@ -9,14 +9,16 @@ function View_Problem() {
     const [sample_output, set_sample_output] = useState('');
 
     const [code, setCode] = useState(`
-    #include <iostream> 
+#include <iostream> 
+using namespace std;
       
-    int main() { 
-        std::cout << "Hello World!"; 
+int main() { 
+    cout << "Hello World!"; 
             
-        return 0; 
-    }`);
+    return 0; 
+}`);
     const [output, setOutput] = useState(''); // State to store output
+    const [input, setInput] = useState('');
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -43,7 +45,8 @@ function View_Problem() {
 
         const payload = {
             language: 'cpp',
-            code
+            code, 
+            input
         };
 
         try {
@@ -112,6 +115,8 @@ function View_Problem() {
                                 <textarea
                                     className="form-control mb-3"
                                     placeholder="Enter sample input here"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
                                     style={{
                                         fontSize: 12,
                                         rows: '5',
