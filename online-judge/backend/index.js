@@ -142,13 +142,13 @@ app.get('/get_problem/:id', async (req, res) => {
 // Create Problem
 app.post('/create_problem', async (req, res) => {
   try {
-    const { problem_title, problem_statement, sample_input, sample_output } = req.body;
+    const { problem_title, problem_statement, sample_input, sample_output, test_cases } = req.body;
 
     if (!(problem_title && problem_statement)) {
       return res.status(400).send("Please enter all the fields");
     }
 
-    const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output });
+    const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output, test_cases });
 
     res.status(201).json({
       message: "Successfully created",
@@ -165,12 +165,29 @@ app.post('/create_problem', async (req, res) => {
 app.put('/update_problem/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const problem = await Problem.findByIdAndUpdate({ _id: id }, { problem_title: req.body.problem_title, problem_statement: req.body.problem_statement, sample_input: req.body.sample_input, sample_output: req.body.sample_output });
+    const updatedProblem = await Problem.findByIdAndUpdate(
+      { _id: id },
+      {
+        problem_title: req.body.problem_title,
+        problem_statement: req.body.problem_statement,
+        sample_input: req.body.sample_input,
+        sample_output: req.body.sample_output,
+        test_cases: req.body.test_cases
+      },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!updatedProblem) {
+      return res.status(404).json({ message: "Problem not found" });
+    }
+
+    res.status(200).json(updatedProblem);
   } catch (error) {
-    console.log("Not able to fetch problem data : " + error);
-    res.status(500).json({ message: "Error fetching problem" });
+    console.log("Error updating problem: " + error);
+    res.status(500).json({ message: "Error updating problem" });
   }
-})
+});
+
 
 // Delete Problem
 app.delete('/delete_problem/:id', async (req, res) => {

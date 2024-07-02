@@ -1,4 +1,13 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
+
+const testCaseSchema = new mongoose.Schema({
+    input: {
+        type: String,
+    },
+    output: {
+        type: String,
+    }
+});
 
 const problemSchema = new mongoose.Schema({
     problem_title: {
@@ -16,6 +25,10 @@ const problemSchema = new mongoose.Schema({
     sample_output: {
         type: String
     },
+    test_cases: {
+        type: [testCaseSchema],
+        default: [],
+    }
 });
 
 const Problem = mongoose.model("problem", problemSchema);

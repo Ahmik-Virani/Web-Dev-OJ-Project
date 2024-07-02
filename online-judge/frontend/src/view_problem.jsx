@@ -3,10 +3,18 @@ import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 
 function View_Problem() {
+
+    const initialTestCase = {
+        input: "",
+        output: "",
+    }
+
     const [problem_title, set_problem_title] = useState('');
     const [problem_statement, set_problem_statement] = useState('');
     const [sample_input, set_sample_input] = useState('');
     const [sample_output, set_sample_output] = useState('');
+    const [test_cases, set_test_cases] = useState([initialTestCase]);
+    const [verdict, set_verdict] = useState('');
 
     const [code, setCode] = useState(`
 #include <iostream> 
@@ -31,6 +39,8 @@ int main() {
                 set_problem_statement(result.data.problem_statement);
                 set_sample_input(result.data.sample_input);
                 set_sample_output(result.data.sample_output);
+                set_test_cases(result.data.test_cases);
+
             } catch (error) {
                 console.log("Error fetching problem: " + error);
             }
@@ -39,13 +49,13 @@ int main() {
         fetchProblem();
     }, [id]);
 
-    const handleSubmit = async () => {
+    const handleRun = async () => {
         // Reset output state to clear previous output
         setOutput('');
 
         const payload = {
             language: 'cpp',
-            code, 
+            code,
             input
         };
 
@@ -55,6 +65,45 @@ int main() {
         } catch (error) {
             console.log(error.response);
         }
+    }
+
+    const handleSubmit = async () => {
+        // Reset output state to clear previous output
+        setOutput('');
+        set_verdict('');
+
+        const outputArray = [];
+
+        for (let i = 0; i < test_cases.length; i++) {
+            const payload = {
+                language: 'cpp',
+                code,
+                input: test_cases[i].input,
+            };
+
+            try {
+                const { data } = await axios.post('http://localhost:8000/run', payload);
+                outputArray.push(data.output);
+            } catch (error) {
+                console.log(error.response);
+            }
+        }
+
+        let verdict = "Success";
+
+        for (let i = 0; i < test_cases.length; i++) {
+            let actualOutput = outputArray[i].replace(/\s+/g, ' ').trim();
+            let expectedOutput = test_cases[i].output.replace(/\s+/g, ' ').trim();
+            
+            if (actualOutput !== expectedOutput) {
+                verdict = "Wrong answer in test case " + (i + 1);
+                break;
+            }
+        }
+        
+
+        set_verdict(verdict);
+        console.log(verdict);
     }
 
     return (
@@ -147,7 +196,7 @@ int main() {
                             </div>
 
                             <div className="d-flex justify-content-end">
-                                <button className="btn btn-primary mr-2">Run</button>
+                                <button className="btn btn-success" onClick={handleRun}>Run</button>
                                 <button className="btn btn-success" onClick={handleSubmit}>Submit</button>
                             </div>
                         </div>

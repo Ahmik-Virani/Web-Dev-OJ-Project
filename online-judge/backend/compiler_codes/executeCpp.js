@@ -1,15 +1,15 @@
-import fs from 'fs'
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 
-const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
-const __dirname = path.dirname(__filename); // get the name of the directory
+const __filename = fileURLToPath(import.meta.url); // Get the resolved path to the file
+const __dirname = path.dirname(__filename); // Get the name of the directory
 
 const outputPath = path.join(__dirname, "outputs");
 
-if(!fs.existsSync(outputPath)) {
-    fs.mkdirSync(outputPath, {recursive: true});
+if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath, { recursive: true });
 }
 
 const executeCpp = (filePath, inputPath) => {
@@ -19,17 +19,30 @@ const executeCpp = (filePath, inputPath) => {
 
     return new Promise((resolve, reject) => {
         exec(
-            `g++ ${filePath} -o ${outPath} && ${outPath} < ${inputPath}`, 
+            `g++ ${filePath} -o ${outPath} && cd ${outputPath} && ./${jobId}.out < ${inputPath}`,
             (error, stdout, stderr) => {
-                if(error){
+                if (error) {
                     reject(error);
-                }
-                if(stderr){
+                } else if (stderr) {
                     reject(stderr);
+                } else {
+                    // Cleanup the compiled and temporary files
+                    exec(
+                        `rm ${outPath} && rm ${inputPath}`,
+                        (cleanupError, cleanupStdout, cleanupStderr) => {
+                            if (cleanupError) {
+                                reject(cleanupError);
+                            } else if (cleanupStderr) {
+                                reject(cleanupStderr);
+                            } else {
+                                resolve(stdout);
+                            }
+                        }
+                    );
                 }
-                resolve(stdout);
-        });
-    })
-}
+            }
+        );
+    });
+};
 
-export default executeCpp
+export default executeCpp;
