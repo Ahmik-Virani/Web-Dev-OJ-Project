@@ -216,6 +216,7 @@ app.post('/run', async (req, res) => {
     const output = await executeCpp(filePath, inputPath);
     res.send({ filePath, output, inputPath });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "Error" + error.message,

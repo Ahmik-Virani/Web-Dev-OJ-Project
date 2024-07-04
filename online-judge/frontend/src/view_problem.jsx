@@ -103,7 +103,6 @@ int main() {
         
 
         set_verdict(verdict);
-        console.log(verdict);
     }
 
     return (
@@ -195,8 +194,19 @@ int main() {
                                 />
                             </div>
 
-                            <div className="d-flex justify-content-end">
-                                <button className="btn btn-success" onClick={handleRun}>Run</button>
+                            {verdict && (
+                                <div className="mt-4 mb-4">
+                                    <div className="card">
+                                        <div className="card-body">
+                                            <h3>Verdict</h3>
+                                            <p>{verdict}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="d-flex justify-content-end mt-4">
+                                <button className="btn btn-success mr-2" onClick={handleRun}>Run</button>
                                 <button className="btn btn-success" onClick={handleSubmit}>Submit</button>
                             </div>
                         </div>

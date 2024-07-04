@@ -19,7 +19,7 @@ const executeCpp = (filePath, inputPath) => {
 
     return new Promise((resolve, reject) => {
         exec(
-            `g++ ${filePath} -o ${outPath} && cd ${outputPath} && ./${jobId}.out < ${inputPath}`,
+            `g++ '${filePath}' -o '${path.join("./compiler_codes/outputs", filename)}' && cd '${outputPath}' && ./${jobId}.out < '${inputPath}'`,
             (error, stdout, stderr) => {
                 if (error) {
                     reject(error);
@@ -28,7 +28,7 @@ const executeCpp = (filePath, inputPath) => {
                 } else {
                     // Cleanup the compiled and temporary files
                     exec(
-                        `rm ${outPath} && rm ${inputPath}`,
+                        `rm '${outPath}' && rm '${inputPath}'`,
                         (cleanupError, cleanupStdout, cleanupStderr) => {
                             if (cleanupError) {
                                 reject(cleanupError);

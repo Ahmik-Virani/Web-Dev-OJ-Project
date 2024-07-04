@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { act, useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons"
+import logo from './assets/logo.png'
 import './index.css';
-import user_icon from './assets/person.png';
-import email_icon from './assets/email.png';
-import password_icon from './assets/password.png';
 
 function App() {
   const [action, setAction] = useState("Login");
@@ -13,28 +12,42 @@ function App() {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
+
   const navigate = useNavigate();
+
+  const checkPassword = (pwd) => {
+    const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,100}$/;
+    if (pwd.match(decimal)) {
+      return true;
+    } else {
+      alert('Password must be atleast 8 characters long and must contain atleast one lowercase, one uppercase, one special character and one numberic digit');
+      return false;
+    }
+  }
 
   const handleSubmit = async () => {
     if ((action === "Sign Up" && firstname && lastname && userEmail && userPassword) || (action === "Login" && userEmail && userPassword)) {
-      const data = {
-        firstname,
-        lastname,
-        email: userEmail,
-        password: userPassword,
-      };
+      if (action === 'Login' || checkPassword(userPassword)) {
+        const data = {
+          firstname,
+          lastname,
+          email: userEmail,
+          password: userPassword,
+        };
 
-      try {
-        setLoading(true);
-        const response = await uploadUserData(data);
-        console.log(response);
-        setLoading(false);
-        toast.success('Action successful!');
-        navigate('/home');
-      } catch (error) {
-        console.error("Error uploading user data:", error);
-        toast.error(error.message || 'An error occurred.');
-        setLoading(false);
+        try {
+          setLoading(true);
+          const response = await uploadUserData(data);
+          console.log(response);
+          setLoading(false);
+          toast.success('Action successful!');
+          navigate('/home');
+        } catch (error) {
+          console.error("Error uploading user data:", error);
+          toast.error(error.message || 'An error occurred.');
+          setLoading(false);
+        }
       }
     } else {
       toast.error("Please fill out all fields.");
@@ -64,17 +77,17 @@ function App() {
   };
 
   return (
-    <section className="vh-100 gradient-custom">
-      <div className="container py-5 h-100">
+    <section className="vh-100 gradient-custom " style={{ overflow: "auto", height: "100%" }}>
+      <div className="container py-5 h-auto">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-            <div className="card bg-dark text-white" style={{ borderRadius: '1rem' }}>
+            <div className="card bg-light text-black">
               <div className="card-body p-5 text-center">
 
                 <div className="mb-md-5 mt-md-4 pb-5">
-
+                  <img src={logo} style={{ width: '100px' }} />
                   <h2 className="fw-bold mb-2 text-uppercase">{action}</h2>
-                  <p className="text-white-50 mb-5">
+                  <p className="text-black-50 mb-5">
                     {action === "Login" ? "Please enter your login and password!" : "Please fill out the form to sign up!"}
                   </p>
 
@@ -112,37 +125,39 @@ function App() {
                       onChange={(e) => setUserEmail(e.target.value)}
                     />
                   </div>
-                  <div className="form-outline form-white mb-4">
+                  <div className="form-outline form-white mb-4" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <input
-                      type="password"
+                      type={visible ? "text" : "password"}
                       id="typePasswordX"
                       className="form-control form-control-lg"
                       placeholder="Password"
                       value={userPassword}
                       onChange={(e) => setUserPassword(e.target.value)}
+                      style={{ paddingRight: '40px' }} // Ensure there's space for the icon inside the input
                     />
+                    <div
+                      onClick={() => setVisible(!visible)}
+                      style={{ position: 'absolute', right: '10px', cursor: 'pointer', height: '100%', display: 'flex', alignItems: 'center' }}
+                    >
+                      {
+                        visible ? <EyeInvisibleOutlined /> : <EyeOutlined />
+                      }
+                    </div>
                   </div>
 
                   <p className="small mb-5 pb-lg-2">
-                    <a className="text-white-50" href="#!">Forgot password?</a>
+                    <a className="text-black-50" href="#!">Forgot password?</a>
                   </p>
 
                   <button
                     data-mdb-button-init
                     data-mdb-ripple-init
-                    className="btn btn-outline-light btn-lg px-5"
+                    className="btn btn-outline-light btn-lg px-5 bg-primary"
                     type="submit"
                     onClick={handleSubmit}
                   >
                     {loading ? "Submitting..." : "Submit"}
                   </button>
-
-                  <div className="d-flex justify-content-center text-center mt-4 pt-1">
-                    <a href="#!" className="text-white"><i className="fab fa-facebook-f fa-lg"></i></a>
-                    <a href="#!" className="text-white"><i className="fab fa-twitter fa-lg mx-4 px-2"></i></a>
-                    <a href="#!" className="text-white"><i className="fab fa-google fa-lg"></i></a>
-                  </div>
-
                 </div>
 
                 <div>
@@ -150,7 +165,7 @@ function App() {
                     {action === "Login" ? "Don't have an account?" : "Already have an account?"}
                     <a
                       href="#!"
-                      className="text-white-50 fw-bold"
+                      className="text-blue-50 fw-bold"
                       onClick={() => setAction(action === "Login" ? "Sign Up" : "Login")}
                     >
                       {action === "Login" ? " Sign Up" : " Login"}

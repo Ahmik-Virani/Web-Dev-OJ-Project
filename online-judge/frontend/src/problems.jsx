@@ -30,6 +30,7 @@ function Problems() {
 
     return (
         <div>
+            <button>Logout</button>
             <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
                 <div className="w-50 bg-white rounded p-3">
                     <Link to='/create_problem' className='btn btn-success mb-2'>Add +</Link>
