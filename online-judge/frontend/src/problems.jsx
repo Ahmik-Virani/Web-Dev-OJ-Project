@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import './index.css'
 
 function Problems() {
     const [problems, setProblems] = useState([]);
@@ -30,51 +31,31 @@ function Problems() {
         }
     };
 
-    const handleLogout = async () => {;
-        try {
-            await axios.get('http://localhost:8000/logout', {withCredentials: true});
-            navigate('/')
-        } catch (error) {
-            console.log("Error logging out: " + error);
-        }
-    }
-
     return (
         <div>
-            <button onClick={handleLogout}>Logout</button>
-            <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-                <div className="w-50 bg-white rounded p-3">
+            <div className="d-flex vh-100 bg-light">
+                <div className="w-100 bg-white rounded p-3">
                     <Link to='/create_problem' className='btn btn-success mb-2'>Add +</Link>
-                    <input type="text" placeholder="Search here..." className="mb-3 form-control" onChange={(e)=>{setSearchTerm(e.target.value)}} />
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>Problem Title</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {problems
-                            .filter((problem) => {
-                                if(searchTerm == ""){
-                                    return problem;
-                                }else if(problem.problem_title.toLowerCase().includes(searchTerm.toLocaleLowerCase())){
-                                    return problem;
-                                }
-                            })
-                            .map((problem) => (
-                                <tr key={problem._id}>
-                                    <td>
-                                        <Link to={`/view_problem/${problem._id}`}>{problem.problem_title}</Link>
-                                    </td>
-                                    <td>
-                                        <Link to={`/update_problem/${problem._id}`} className='btn btn-success'>Update</Link>
-                                        <button className='btn btn-danger' onClick={(e) => handleDelete(problem._id)}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <input type="text" placeholder="Search here..." className="mb-3 form-control" onChange={(e) => { setSearchTerm(e.target.value) }} />
+                    {problems
+                        .filter((problem) => {
+                            if (searchTerm == "") {
+                                return problem;
+                            } else if (problem.problem_title.toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
+                                return problem;
+                            }
+                        })
+                        .map((problem) => (
+                            <div key={problem._id} className="d-flex mb-2">
+                                <div className="problem-box w-100" onClick={() => navigate(`/view_problem/${problem._id}`)}>
+                                    {problem.problem_title}
+                                </div>
+                                <div className="ml-2">
+                                    <Link to={`/update_problem/${problem._id}`} className='btn btn-success'>Update</Link>
+                                    <button className='btn btn-danger' onClick={(e) => handleDelete(problem._id)}>Delete</button>
+                                </div>
+                            </div>
+                        ))}
                 </div>
             </div>
         </div>

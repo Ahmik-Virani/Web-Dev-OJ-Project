@@ -4,15 +4,19 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import App from './App.jsx';
 import Home from './home.jsx'; // Ensure you have a Home component
 import './index.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Problems from './problems.jsx';
 import Update_Problems from './update_problem.jsx';
 import Create_Problems from './create_problem.jsx';
 import View_Problem from './view_problem.jsx';
+import Navbar from './navbar.jsx';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<Problems />} />

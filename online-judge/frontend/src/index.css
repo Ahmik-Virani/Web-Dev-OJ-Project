@@ -13,3 +13,22 @@
 html, body {
   overflow: auto;
 }
+
+
+.problem-box {
+  background-color: #f8f9fa; /* Light grey background */
+  border: 1px solid #ddd; /* Light grey border */
+  border-radius: 8px; /* Rounded borders */
+  padding: 10px 15px; /* Padding inside the box */
+  cursor: pointer; /* Pointer cursor to indicate it's clickable */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+.problem-box:hover {
+  background-color: #e9ecef; /* Slightly darker grey on hover */
+}
+
+.d-flex .align-items-center .problem-box {
+  text-align: left; /* Align text to the left */
+  color: black; /* Ensure text color is black */
+}
