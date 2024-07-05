@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Problems() {
     const [problems, setProblems] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProblems = async () => {
@@ -28,9 +30,18 @@ function Problems() {
         }
     };
 
+    const handleLogout = async () => {;
+        try {
+            await axios.get('http://localhost:8000/logout', {withCredentials: true});
+            navigate('/')
+        } catch (error) {
+            console.log("Error logging out: " + error);
+        }
+    }
+
     return (
         <div>
-            <button>Logout</button>
+            <button onClick={handleLogout}>Logout</button>
             <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
                 <div className="w-50 bg-white rounded p-3">
                     <Link to='/create_problem' className='btn btn-success mb-2'>Add +</Link>

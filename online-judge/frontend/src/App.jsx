@@ -65,7 +65,8 @@ function App() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      credentials: 'include',     //Only added this line to fix the cookies part
     });
 
     if (!response.ok) {

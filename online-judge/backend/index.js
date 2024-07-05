@@ -12,12 +12,18 @@ import cors from 'cors';
 import generateFile from './compiler_codes/generateFile.js';
 import executeCpp from './compiler_codes/executeCpp.js';
 import generateInputFile from './compiler_codes/generateInputFile.js';
+import { cookieJwtAuth } from './middleware/cookieJwtAuth.js';
+
 
 const app = express();
 dotenv.config();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -64,6 +70,7 @@ app.post('/register', async (req, res) => {
       message: "You have successfully registered",
       success: true,
       user,
+      token
     });
 
   } catch (error) {
@@ -92,20 +99,24 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY, {
-      expiresIn: "1d",
+      expiresIn: "1h",
     });
 
     existingUser.token = token;
-    existingUser.password = undefined;
+    // existingUser.password = undefined;
+    await existingUser.save();
 
     const options = {
-      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+      httpOnly: true, // The cookie cannot be accessed by JavaScript
+      secure: false, // Set to true if you're using HTTPS
+      sameSite: 'Lax', // Use 'None' if you're dealing with cross-origin requests
     };
 
-    res.status(200).cookie("token", token, options).json({
+    res.cookie("token", token, options).status(200).json({
       message: "You have successfully logged in!",
       success: true,
+      existingUser,
       token,
     });
 
@@ -115,7 +126,13 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/logout', async (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json('Logout success')
+})
+
 app.get('/problem', async (req, res) => {
+
   try {
     const problems = await Problem.find({});
     res.json(problems);
