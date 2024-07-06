@@ -9,6 +9,12 @@ const testCaseSchema = new mongoose.Schema({
     }
 });
 
+const tagSchema = new mongoose.Schema({
+    tag: {
+        type: String,
+    }
+})
+
 const problemSchema = new mongoose.Schema({
     problem_title: {
         type: String,
@@ -27,6 +33,13 @@ const problemSchema = new mongoose.Schema({
     },
     test_cases: {
         type: [testCaseSchema],
+        default: [],
+    },
+    difficulty: {
+        type: String,
+    },
+    selected_tags: {
+        type: [tagSchema],
         default: [],
     }
 });

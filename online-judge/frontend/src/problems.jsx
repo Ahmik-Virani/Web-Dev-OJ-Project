@@ -51,7 +51,31 @@ function Problems() {
                         .map((problem) => (
                             <div key={problem._id} className="d-flex mb-2">
                                 <div className="problem-box w-100" onClick={() => navigate(`/view_problem/${problem._id}`)}>
-                                    {problem.problem_title}
+                                    <div className="problem-title">
+                                        {problem.problem_title}
+                                    </div>
+
+                                    {problem.difficulty === 'Easy' && (
+                                        <div className="problem-difficulty-easy">
+                                            {problem.difficulty}
+                                        </div>
+                                    )}
+                                    {problem.difficulty === 'Medium' && (
+                                        <div className="problem-difficulty-medium">
+                                            {problem.difficulty}
+                                        </div>
+                                    )}
+                                    {problem.difficulty === 'Hard' && (
+                                        <div className="problem-difficulty-hard">
+                                            {problem.difficulty}
+                                        </div>
+                                    )}
+
+                                    <div className="problem-tags">
+                                        {problem.selected_tags.map(tag => (
+                                            <span key={tag._id} className="tag">{tag.tag}</span>
+                                        ))}
+                                    </div>
                                 </div>
                                 {user?.role === 'admin' && (
                                     <div className="ml-2">

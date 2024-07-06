@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown'; // Import Dropdown if you use Dropdown.Item
 
 function Create_Problems() {
 
@@ -14,6 +16,18 @@ function Create_Problems() {
     const [sample_input, set_sample_input] = useState('');
     const [sample_output, set_sample_output] = useState('');
     const [test_cases, set_test_cases] = useState([initialTestCase]);
+    const [difficulty, setDifficulty] = useState('');
+    const [difficultyTitle, setDifficultyTitle] = useState('Set Difficulty')
+    const [selected_tags, set_Selected_tags] = useState([]);
+    const tags = ['Array', 'DP', 'Greedy', 'Pointers', 'Basic Maths'];
+
+    const toogleTags = (option) => {
+        if (selected_tags.includes(option)) {
+            set_Selected_tags(selected_tags.filter((item) => item !== option));
+        } else {
+            set_Selected_tags([...selected_tags, option]);
+        }
+    };
 
     const navigate = useNavigate();
 
@@ -25,8 +39,9 @@ function Create_Problems() {
 
     const Submit = async (e) => {
         e.preventDefault();
+        const formatted_tags = selected_tags.map(tag => ({ tag }));
         try {
-            await axios.post("http://localhost:8000/create_problem", { problem_title, problem_statement, sample_input, sample_output, test_cases });
+            await axios.post("http://localhost:8000/create_problem", { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
             console.log("Added successfully");
             navigate('/problem');
         } catch (error) {
@@ -50,6 +65,33 @@ function Create_Problems() {
                     <div className="mb-2">
                         <label htmlFor="">Problem Statement</label>
                         <textarea placeholder="Enter Problem Statement" className="form-control" rows="3" value={problem_statement} onChange={(e) => set_problem_statement(e.target.value)}></textarea>
+                    </div>
+                    <DropdownButton id="dropdown-basic-button" title={difficultyTitle}>
+                        <Dropdown.Item onClick={() => { setDifficulty("Easy"); setDifficultyTitle("Easy"); }}>Easy</Dropdown.Item>
+                        <Dropdown.Item onClick={() => { setDifficulty("Medium"); setDifficultyTitle("Medium"); }}>Medium</Dropdown.Item>
+                        <Dropdown.Item onClick={() => { setDifficulty("Hard"); setDifficultyTitle("Hard"); }}>Hard</Dropdown.Item>
+                    </DropdownButton>
+                    <div>
+                        <Dropdown>
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                Select Options
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {tags.map((option, index) => (
+                                    <Dropdown.Item
+                                        key={index}
+                                        onClick={() => toogleTags(option)}
+                                        active={selected_tags.includes(option)}
+                                    >
+                                        {option}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <div>
+                            <strong>Selected Options:</strong>
+                            {selected_tags.join(', ')}
+                        </div>
                     </div>
                     <div className="mb-2">
                         <label htmlFor="">Sample Input</label>

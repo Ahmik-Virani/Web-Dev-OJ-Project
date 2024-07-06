@@ -7,13 +7,11 @@ import bcrypt from 'bcryptjs';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import router from './routes/routes.js';
 import cors from 'cors';
 import generateFile from './compiler_codes/generateFile.js';
 import executeCpp from './compiler_codes/executeCpp.js';
 import generateInputFile from './compiler_codes/generateInputFile.js';
-import { cookieJwtAuth } from './middleware/cookieJwtAuth.js';
-import authorizeRoles from './middleware/roles.js';
+
 
 
 const app = express();
@@ -35,8 +33,6 @@ DBConnection();
 app.get('/', (req, res) => {
   res.send("Welcome to today's class");
 });
-
-app.use('/', router);
 
 // User Registration
 app.post('/register', async (req, res) => {
@@ -164,13 +160,13 @@ app.get('/get_problem/:id', async (req, res) => {
 // Create Problem
 app.post('/create_problem', async (req, res) => {
   try {
-    const { problem_title, problem_statement, sample_input, sample_output, test_cases } = req.body;
+    const { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags } = req.body;
 
     if (!(problem_title && problem_statement)) {
       return res.status(400).send("Please enter all the fields");
     }
 
-    const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output, test_cases });
+    const problem = await Problem.create({ problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags });
 
     res.status(201).json({
       message: "Successfully created",
@@ -194,7 +190,9 @@ app.put('/update_problem/:id', async (req, res) => {
         problem_statement: req.body.problem_statement,
         sample_input: req.body.sample_input,
         sample_output: req.body.sample_output,
-        test_cases: req.body.test_cases
+        test_cases: req.body.test_cases,
+        difficulty: req.body.difficulty,
+        selected_tags: req.body.selected_tags,
       },
       { new: true } // This option returns the updated document
     );

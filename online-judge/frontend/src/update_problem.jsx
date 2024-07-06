@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown'; // Import Dropdown if you use Dropdown.Item
 
 function Update_Problems() {
     const initialTestCase = {
@@ -13,6 +15,17 @@ function Update_Problems() {
     const [sample_input, set_sample_input] = useState('');
     const [sample_output, set_sample_output] = useState('');
     const [test_cases, set_test_cases] = useState([initialTestCase]);
+    const [difficulty, setDifficulty] = useState('');
+    const [selected_tags, set_Selected_tags] = useState([]);
+    const tags = ['Array', 'DP', 'Greedy', 'Pointers', 'Basic Maths'];
+
+    const toogleTags = (option) => {
+        if (selected_tags.includes(option)) {
+            set_Selected_tags(selected_tags.filter((item) => item !== option));
+        } else {
+            set_Selected_tags([...selected_tags, option]);
+        }
+    };
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -26,6 +39,8 @@ function Update_Problems() {
                 set_sample_input(result.data.sample_input);
                 set_sample_output(result.data.sample_output);
                 set_test_cases(result.data.test_cases || [initialTestCase]);
+                setDifficulty(result.data.difficulty || "Easy");
+                set_Selected_tags(result.data.selected_tags.map(tagObj => tagObj.tag));
             } catch (error) {
                 console.log("Error fetching problem: " + error);
             }
@@ -39,11 +54,12 @@ function Update_Problems() {
         values[index][event.target.name] = event.target.value;
         set_test_cases(values);
     };
-    
+
     const Update = async (e) => {
         e.preventDefault();
+        const formatted_tags = selected_tags.map(tag => ({ tag }));
         try {
-            const response = await axios.put(`http://localhost:8000/update_problem/${id}`, { problem_title, problem_statement, sample_input, sample_output, test_cases });
+            const response = await axios.put(`http://localhost:8000/update_problem/${id}`, { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
             console.log("Updated successfully:", response.data);
             navigate('/problem');
         } catch (error) {
@@ -59,8 +75,6 @@ function Update_Problems() {
             }
         }
     }
-    
-    
 
     const addTestCase = () => {
         set_test_cases([...test_cases, { ...initialTestCase }]);
@@ -78,6 +92,33 @@ function Update_Problems() {
                     <div className="mb-2">
                         <label htmlFor="">Problem Statement</label>
                         <textarea placeholder="Enter Problem Statement" className="form-control" rows="3" value={problem_statement} onChange={(e) => set_problem_statement(e.target.value)}></textarea>
+                    </div>
+                    <DropdownButton id="dropdown-basic-button" title={difficulty}>
+                        <Dropdown.Item onClick={() => { setDifficulty("Easy") }}>Easy</Dropdown.Item>
+                        <Dropdown.Item onClick={() => { setDifficulty("Medium") }}>Medium</Dropdown.Item>
+                        <Dropdown.Item onClick={() => { setDifficulty("Hard") }}>Hard</Dropdown.Item>
+                    </DropdownButton>
+                    <div>
+                        <Dropdown>
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                Select Options
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {tags.map((option, index) => (
+                                    <Dropdown.Item
+                                        key={index}
+                                        onClick={() => toogleTags(option)}
+                                        active={selected_tags.includes(option)}
+                                    >
+                                        {option}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <div>
+                            <strong>Selected Options:</strong>
+                            {selected_tags.join(', ')}
+                        </div>
                     </div>
                     <div className="mb-2">
                         <label htmlFor="">Sample Input</label>
