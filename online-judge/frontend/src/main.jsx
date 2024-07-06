@@ -1,30 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import App from './App.jsx';
-import Home from './home.jsx'; // Ensure you have a Home component
+import App from './App';
+import Home from './home'; // Ensure you have a Home component
+import Problems from './problems';
+import Update_Problems from './update_problem';
+import Create_Problems from './create_problem';
+import View_Problem from './view_problem';
+import Navbar from './navbar';
+import { UserProvider } from './UserContext'; // Import UserProvider
 import './index.css';
-import Problems from './problems.jsx';
-import Update_Problems from './update_problem.jsx';
-import Create_Problems from './create_problem.jsx';
-import View_Problem from './view_problem.jsx';
-import Navbar from './navbar.jsx';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/home" element={<Problems />} />
-        <Route path="/problem" element={<Problems />} />
-        <Route path="/create_problem" element={<Create_Problems />} />
-        <Route path="/update_problem/:id" element={<Update_Problems />} />
-        <Route path="/view_problem/:id" element={<View_Problem />} />
-      </Routes>
-    </Router>
-  </React.StrictMode>,
+    <UserProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/home" element={<Problems />} />
+          <Route path="/problem" element={<Problems />} />
+          <Route path="/create_problem" element={<Create_Problems />} />
+          <Route path="/update_problem/:id" element={<Update_Problems />} />
+          <Route path="/view_problem/:id" element={<View_Problem />} />
+        </Routes>
+      </Router>
+    </UserProvider>
+  </React.StrictMode>
 );

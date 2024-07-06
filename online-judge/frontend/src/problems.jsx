@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 import './index.css'
 
 function Problems() {
     const [problems, setProblems] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-
+    const { user } = useUser();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,7 +36,9 @@ function Problems() {
         <div>
             <div className="d-flex vh-100 bg-light">
                 <div className="w-100 bg-white rounded p-3">
-                    <Link to='/create_problem' className='btn btn-success mb-2'>Add +</Link>
+                    {user?.role === 'admin' && (
+                        <Link to='/create_problem' className='btn btn-success mb-2'>Add +</Link>
+                    )}
                     <input type="text" placeholder="Search here..." className="mb-3 form-control" onChange={(e) => { setSearchTerm(e.target.value) }} />
                     {problems
                         .filter((problem) => {
@@ -50,10 +53,12 @@ function Problems() {
                                 <div className="problem-box w-100" onClick={() => navigate(`/view_problem/${problem._id}`)}>
                                     {problem.problem_title}
                                 </div>
-                                <div className="ml-2">
-                                    <Link to={`/update_problem/${problem._id}`} className='btn btn-success'>Update</Link>
-                                    <button className='btn btn-danger' onClick={(e) => handleDelete(problem._id)}>Delete</button>
-                                </div>
+                                {user?.role === 'admin' && (
+                                    <div className="ml-2">
+                                        <Link to={`/update_problem/${problem._id}`} className='btn btn-success'>Update</Link>
+                                        <button className='btn btn-danger' onClick={(e) => handleDelete(problem._id)}>Delete</button>
+                                    </div>
+                                )}
                             </div>
                         ))}
                 </div>

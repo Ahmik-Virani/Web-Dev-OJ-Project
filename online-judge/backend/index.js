@@ -13,6 +13,7 @@ import generateFile from './compiler_codes/generateFile.js';
 import executeCpp from './compiler_codes/executeCpp.js';
 import generateInputFile from './compiler_codes/generateInputFile.js';
 import { cookieJwtAuth } from './middleware/cookieJwtAuth.js';
+import authorizeRoles from './middleware/roles.js';
 
 
 const app = express();
@@ -98,7 +99,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).send("Incorrect Password");
     }
 
-    const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY, {
+    const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
 
@@ -116,8 +117,12 @@ app.post('/login', async (req, res) => {
     res.cookie("token", token, options).status(200).json({
       message: "You have successfully logged in!",
       success: true,
-      existingUser,
-      token,
+      existingUser: {
+        id: existingUser._id,
+        email: existingUser.email,
+        role: existingUser.role,
+        token
+      },
     });
 
   } catch (error) {

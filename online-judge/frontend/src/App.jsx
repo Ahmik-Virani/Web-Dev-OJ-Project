@@ -1,9 +1,10 @@
-import React, { act, useState } from 'react';
+import React, { useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons"
-import logo from './assets/logo.png'
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import logo from './assets/logo.png';
 import './index.css';
+import { useUser } from './UserContext';
 
 function App() {
   const [action, setAction] = useState("Login");
@@ -13,7 +14,7 @@ function App() {
   const [userPassword, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
-
+  const { setUser } = useUser();
   const navigate = useNavigate();
 
   const checkPassword = (pwd) => {
@@ -21,10 +22,10 @@ function App() {
     if (pwd.match(decimal)) {
       return true;
     } else {
-      alert('Password must be atleast 8 characters long and must contain atleast one lowercase, one uppercase, one special character and one numberic digit');
+      alert('Password must be at least 8 characters long and must contain at least one lowercase, one uppercase, one special character, and one numeric digit');
       return false;
     }
-  }
+  };
 
   const handleSubmit = async () => {
     if ((action === "Sign Up" && firstname && lastname && userEmail && userPassword) || (action === "Login" && userEmail && userPassword)) {
@@ -39,9 +40,9 @@ function App() {
         try {
           setLoading(true);
           const response = await uploadUserData(data);
-          console.log(response);
           setLoading(false);
           toast.success('Action successful!');
+          setUser(response.existingUser || response.user); // Ensure to handle response appropriately
           navigate('/home');
         } catch (error) {
           console.error("Error uploading user data:", error);
@@ -84,9 +85,8 @@ function App() {
           <div className="col-12 col-md-8 col-lg-6 col-xl-5">
             <div className="card bg-light text-black">
               <div className="card-body p-5 text-center">
-
                 <div className="mb-md-5 mt-md-4 pb-5">
-                  <img src={logo} style={{ width: '100px' }} />
+                  <img src={logo} style={{ width: '100px' }} alt="logo" />
                   <h2 className="fw-bold mb-2 text-uppercase">{action}</h2>
                   <p className="text-black-50 mb-5">
                     {action === "Login" ? "Please enter your login and password!" : "Please fill out the form to sign up!"}
@@ -140,9 +140,7 @@ function App() {
                       onClick={() => setVisible(!visible)}
                       style={{ position: 'absolute', right: '10px', cursor: 'pointer', height: '100%', display: 'flex', alignItems: 'center' }}
                     >
-                      {
-                        visible ? <EyeInvisibleOutlined /> : <EyeOutlined />
-                      }
+                      {visible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                     </div>
                   </div>
 
