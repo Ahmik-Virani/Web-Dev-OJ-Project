@@ -6,18 +6,20 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    // Retrieve user from localStorage if it exists
     const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    const savedToken = localStorage.getItem('token');
+    return savedUser ? { ...JSON.parse(savedUser), token: savedToken } : null;
   });
 
   useEffect(() => {
     if (user) {
-      // Store user in localStorage whenever it changes
+      
       localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', user.token);
     } else {
-      // Remove user from localStorage when user is null
+
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
     }
   }, [user]);
 

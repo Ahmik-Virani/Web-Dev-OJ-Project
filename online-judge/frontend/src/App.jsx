@@ -42,7 +42,14 @@ function App() {
           const response = await uploadUserData(data);
           setLoading(false);
           toast.success('Action successful!');
-          setUser(response.existingUser || response.user); // Ensure to handle response appropriately
+          
+          setUser({
+            id: response.existingUser?.id || response.user?.id,
+            email: response.existingUser?.email || response.user?.email,
+            role: response.existingUser?.role || response.user?.role,
+            token: response.existingUser?.token || response.user?.token,
+          });
+
           navigate('/home');
         } catch (error) {
           console.error("Error uploading user data:", error);
@@ -67,7 +74,7 @@ function App() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data),
-      credentials: 'include',     //Only added this line to fix the cookies part
+      credentials: 'include', // To handle cookies
     });
 
     if (!response.ok) {
@@ -79,7 +86,7 @@ function App() {
   };
 
   return (
-    <section className="vh-100 gradient-custom " style={{ overflow: "auto", height: "100%" }}>
+    <section className="vh-100 gradient-custom" style={{ overflow: "auto", height: "100%" }}>
       <div className="container py-5 h-auto">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col-12 col-md-8 col-lg-6 col-xl-5">

@@ -3,14 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import axios from "axios";
+import logo from './assets/logo.png';
 
 function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await axios.get('http://localhost:8000/logout', {withCredentials: true});
-      navigate('/')
+      await axios.get('http://localhost:8000/logout', { withCredentials: true });
+      navigate('/');
     } catch (error) {
       console.log("Error logging out: " + error);
     }
@@ -19,8 +20,8 @@ function Navbar() {
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <Link className="navbar-brand" to="/">
-          Navbar
+        <Link className="navbar-brand" to="/problem">
+          <img src={logo} style={{ width: '65px' }} alt="logo" />
         </Link>
         <button
           className="navbar-toggler"
@@ -36,11 +37,11 @@ function Navbar() {
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item active">
-              <Link className="nav-link" to="/">
-                Home <span className="sr-only">(current)</span>
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link" to="/submissions/">My Submissions</Link>
             </li>
+          </ul>
+          <ul className="navbar-nav ml-auto">
             <li className="nav-item">
               <button
                 className="btn btn-link nav-link"
@@ -49,38 +50,6 @@ function Navbar() {
               >
                 Logout
               </button>
-            </li>
-            <li className="nav-item dropdown">
-              <Link
-                className="nav-link dropdown-toggle"
-                to="#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dropdown
-              </Link>
-              <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li>
-                  <Link className="dropdown-item" to="#">
-                    Action
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="#">
-                    Another action
-                  </Link>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="#">
-                    Something else here
-                  </Link>
-                </li>
-              </ul>
             </li>
           </ul>
         </div>

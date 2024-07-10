@@ -12,14 +12,12 @@ import generateFile from './compiler_codes/generateFile.js';
 import executeCpp from './compiler_codes/executeCpp.js';
 import generateInputFile from './compiler_codes/generateInputFile.js';
 
-
-
 const app = express();
 dotenv.config();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Your frontend URL
+  origin: 'http://localhost:5173',
   credentials: true,
 }));
 
@@ -28,6 +26,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 DBConnection();
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization']; // Correct header key is 'authorization'
+  const token = authHeader && authHeader.split(' ')[1]; // Safely extract token
+  console.log(token);
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token missing' }); // 401 Unauthorized for missing token
+  }
+
+  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token' }); // 403 Forbidden for invalid token
+    }
+    req.user = user;
+    next();
+  });
+};
+
 
 // Default Route
 app.get('/', (req, res) => {
@@ -105,9 +122,9 @@ app.post('/login', async (req, res) => {
 
     const options = {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
-      httpOnly: true, // The cookie cannot be accessed by JavaScript
-      secure: false, // Set to true if you're using HTTPS
-      sameSite: 'Lax', // Use 'None' if you're dealing with cross-origin requests
+      httpOnly: true, 
+      secure: false, 
+      sameSite: 'Lax', 
     };
 
     res.cookie("token", token, options).status(200).json({
@@ -208,7 +225,6 @@ app.put('/update_problem/:id', async (req, res) => {
   }
 });
 
-
 // Delete Problem
 app.delete('/delete_problem/:id', async (req, res) => {
   const id = req.params.id;
@@ -244,6 +260,75 @@ app.post('/run', async (req, res) => {
   }
 
 })
+
+app.post('/submit_solution', authenticateToken, async (req, res) => {
+  try {
+      const { problem_name, verdict, code } = req.body;
+      const userId = req.user.id;
+
+      const submission = {
+          problem_name,
+          verdict,
+          code,
+          date: new Date()
+      };
+
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      user.solved_problems.push(submission);
+      await user.save();
+
+      res.status(201).json({
+          message: "Solution submitted successfully",
+          submission
+      });
+  } catch (error) {
+      console.log("Error submitting solution: ", error);
+      res.status(500).json({ message: "Error submitting solution" });
+  }
+});
+
+app.get('/submissions', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select('solved_problems');
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.json(user.solved_problems);
+  } catch (error) {
+    console.log("Error fetching submissions: ", error);
+    res.status(500).json({ message: "Error fetching submissions" });
+  }
+});
+
+// Example implementation in your Express app
+app.get('/submissions/:id', authenticateToken, async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const submission = await Submission.findById(id);
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' });
+    }
+
+    // Optionally check if the user has permission to view this submission
+
+    res.json({
+      _id: submission._id,
+      problem_name: submission.problem_name,
+      code: submission.code,
+      // Add other necessary fields
+    });
+  } catch (error) {
+    console.error('Error fetching submission:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 app.listen(8000, () => {
   console.log("Server is listening on port 8000");

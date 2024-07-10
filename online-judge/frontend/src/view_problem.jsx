@@ -103,6 +103,26 @@ int main() {
         
 
         set_verdict(verdict);
+        
+        // Submit the solution to backend
+        const submissionPayload = {
+            problem_name: problem_title,
+            verdict,
+            code,
+        };
+        
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post('http://localhost:8000/submit_solution', submissionPayload, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log("Solution submitted successfully");
+            
+        } catch (error) {
+            console.log("Error submitting solution: ", error.response);
+        }
     }
 
     return (
