@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import axios from 'axios'; // Import axios
 import App from './App';
 import Home from './home'; // Ensure you have a Home component
 import Problems from './problems';
@@ -11,6 +12,7 @@ import Navbar from './navbar';
 import { UserProvider } from './UserContext'; // Import UserProvider
 import Submissions from "./submissions";
 import SubmissionDetail from './view_submission';
+import ProtectedRoute from './protectedRoutes';
 import './index.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";

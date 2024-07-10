@@ -28,23 +28,23 @@ app.use(cookieParser());
 DBConnection();
 
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization']; // Correct header key is 'authorization'
-  const token = authHeader && authHeader.split(' ')[1]; // Safely extract token
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
   console.log(token);
 
   if (!token) {
-    return res.status(401).json({ message: 'Access token missing' }); // 401 Unauthorized for missing token
+    return res.status(401).json({ message: 'Access token missing', redirect: true, url: 'http://localhost:5173/' });
   }
 
   jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid token' }); // 403 Forbidden for invalid token
+      return res.status(403).json({ message: 'Invalid token', redirect: true, url: 'http://localhost:5173/' });
     }
     req.user = user;
     next();
   });
 };
-
 
 // Default Route
 app.get('/', (req, res) => {
@@ -328,7 +328,6 @@ app.get('/submissions/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
 
 app.listen(8000, () => {
   console.log("Server is listening on port 8000");

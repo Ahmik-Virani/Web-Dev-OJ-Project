@@ -11,12 +11,13 @@ RUN apk update && apk add --no-cache g++
 # . means give location of root directory
 # COPY . /app
 # First dot represents your local server, and second the working directory
-COPY package.json .
+COPY package*.json ./
 
 # Can we have multiple run statements in our docker file?
 # Yes we can
 RUN npm i
 
+# COPY <local> <container>
 COPY . .
 
 # You can expose different ports as well

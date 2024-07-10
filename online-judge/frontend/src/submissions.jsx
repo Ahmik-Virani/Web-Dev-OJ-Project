@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Editor } from '@monaco-editor/react';
 
 function Submissions() {
     const [submissions, setSubmissions] = useState([]);
@@ -25,11 +26,13 @@ function Submissions() {
         fetchSubmissions();
     }, []);
 
-    const filteredSubmissions = submissions.filter(submission => {
-        const matchesSearchTerm = submission.problem_name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesSuccessFilter = showSuccessOnly ? submission.verdict === 'Success' : true; // Check for 'Success' verdict
-        return matchesSearchTerm && matchesSuccessFilter;
-    });
+    const filteredSubmissions = submissions
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
+        .filter(submission => {
+            const matchesSearchTerm = submission.problem_name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSuccessFilter = showSuccessOnly ? submission.verdict === 'Success' : true; // Check for 'Success' verdict
+            return matchesSearchTerm && matchesSuccessFilter;
+        });
 
     // Function to handle showing code in a modal
     const showCodeModal = (submission) => {
@@ -90,7 +93,7 @@ function Submissions() {
             {/* Modal for displaying code */}
             {selectedSubmission && (
                 <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)', position: 'fixed', top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000 }}>
-                    <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-dialog modal-dialog-centered modal-lg">
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">{selectedSubmission.problem_name}</h5>
@@ -99,7 +102,19 @@ function Submissions() {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <pre>{selectedSubmission.code}</pre>
+                                <Editor
+                                    height="400px"
+                                    language="cpp"
+                                    theme="vs-light"
+                                    value={selectedSubmission.code}
+                                    options={{
+                                        readOnly: true,
+                                        wordWrap: "off", // Disable word wrapping to enable horizontal scrolling
+                                        scrollBeyondLastLine: false,
+                                        minimap: { enabled: false },
+                                        padding: { top: 0, bottom: 0 },
+                                    }}
+                                />
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={closeCodeModal}>Close</button>

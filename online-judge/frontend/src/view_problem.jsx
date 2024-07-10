@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Editor } from '@monaco-editor/react';
 
 function View_Problem() {
 
@@ -16,8 +17,7 @@ function View_Problem() {
     const [test_cases, set_test_cases] = useState([initialTestCase]);
     const [verdict, set_verdict] = useState('');
 
-    const [code, setCode] = useState(`
-#include <iostream> 
+    const [code, setCode] = useState(`#include <iostream> 
 using namespace std;
       
 int main() { 
@@ -94,23 +94,23 @@ int main() {
         for (let i = 0; i < test_cases.length; i++) {
             let actualOutput = outputArray[i].replace(/\s+/g, ' ').trim();
             let expectedOutput = test_cases[i].output.replace(/\s+/g, ' ').trim();
-            
+
             if (actualOutput !== expectedOutput) {
                 verdict = "Wrong answer in test case " + (i + 1);
                 break;
             }
         }
-        
+
 
         set_verdict(verdict);
-        
+
         // Submit the solution to backend
         const submissionPayload = {
             problem_name: problem_title,
             verdict,
             code,
         };
-        
+
         try {
             const token = localStorage.getItem('token');
             await axios.post('http://localhost:8000/submit_solution', submissionPayload, {
@@ -119,7 +119,7 @@ int main() {
                 }
             });
             console.log("Solution submitted successfully");
-            
+
         } catch (error) {
             console.log("Error submitting solution: ", error.response);
         }
@@ -161,19 +161,17 @@ int main() {
 
                             <div className="container mt-4">
                                 <div className="bg-light shadow-md w-100 mb-4" style={{ maxWidth: '600px', height: '300px', overflowY: 'auto' }}>
-                                    <textarea
-                                        className="form-control code-editor"
+                                    <Editor
+                                        height="300px"
+                                        language="cpp"
+                                        theme="vs-dark"
                                         value={code}
-                                        onChange={(e) => setCode(e.target.value)}
-                                        style={{
-                                            fontFamily: '"Fira Code", "Fira Mono", monospace',
-                                            fontSize: 12,
-                                            outline: 'none',
-                                            border: 'none',
-                                            backgroundColor: '#f7fafc',
-                                            height: '100%',
-                                            overflowY: 'auto',
-                                            resize: 'none'
+                                        onChange={(value) => setCode(value)}
+                                        options={{
+                                            automaticLayout: true,
+                                            wordWrap: "off",
+                                            scrollBeyondLastLine: false,
+                                            minimap: { enabled: false },
                                         }}
                                     />
                                 </div>
