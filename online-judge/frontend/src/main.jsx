@@ -32,7 +32,7 @@ const MainLayout = () => {
         <Route path="/update_problem/:id" element={<Update_Problems />} />
         <Route path="/view_problem/:id" element={<View_Problem />} />
         <Route path='/submissions' element={<Submissions />} />
-        <Route path="/submission/:id" element={<SubmissionDetail />} />
+        <Route path="/submissions/:problemId" element={<Submissions />} />
       </Routes>
     </>
   );

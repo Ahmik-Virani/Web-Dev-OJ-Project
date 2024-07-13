@@ -126,7 +126,7 @@ int main() {
     }
 
     return (
-        <div className="container-fluid vh-100 bg-light">
+        <div className="container-fluid vh-100 bg-light" style={{ overflow: "auto", height: "100%" }}>
             <div className="row">
                 <div className="col">
                     <h1 className="text-center mt-4 mb-4">{problem_title}</h1>
@@ -138,13 +138,37 @@ int main() {
                     <div className="card">
                         <div className="card-body">
                             <h3>Problem Statement</h3>
-                            <p>{problem_statement}</p>
+                            <pre>{problem_statement}</pre>
 
                             <h3>Sample Input</h3>
-                            <p>{sample_input}</p>
+                            <textarea
+                                className="form-control mb-3"
+                                value={sample_input}
+                                readOnly
+                                style={{
+                                    fontSize: 12,
+                                    outline: 'none',
+                                    border: '1px solid #ced4da', // Adding border style
+                                    borderRadius: '4px', // Adding border radius
+                                    padding: '8px', // Adding padding
+                                    overflowY: 'hidden', // Hide overflow to make it auto-adjust
+                                }}
+                            />
 
                             <h3>Sample Output</h3>
-                            <p>{sample_output}</p>
+                            <textarea
+                                className="form-control mb-3"
+                                value={sample_output}
+                                readOnly
+                                style={{
+                                    fontSize: 12,
+                                    outline: 'none',
+                                    border: '1px solid #ced4da', // Adding border style
+                                    borderRadius: '4px', // Adding border radius
+                                    padding: '8px', // Adding padding
+                                    overflowY: 'hidden', // Hide overflow to make it auto-adjust
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
