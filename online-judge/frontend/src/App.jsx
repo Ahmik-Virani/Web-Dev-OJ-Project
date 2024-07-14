@@ -5,7 +5,6 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import logo from './assets/logo.png';
 import './index.css';
 import { useUser } from './UserContext';
-import dotenv from 'dotenv';
 
 function App() {
   const [action, setAction] = useState("Login");
@@ -32,8 +31,6 @@ function App() {
     if ((action === "Sign Up" && firstname && lastname && userEmail && userPassword) || (action === "Login" && userEmail && userPassword)) {
       if (action === 'Login') {
         const data = {
-          // firstname,
-          // lastname,
           email: userEmail,
           password: userPassword,
         };
@@ -43,7 +40,7 @@ function App() {
           const response = await uploadUserData(data);
           setLoading(false);
           toast.success('Action successful!');
-          
+
           setUser({
             id: response.existingUser?.id || response.user?.id,
             email: response.existingUser?.email || response.user?.email,
@@ -57,32 +54,35 @@ function App() {
           toast.error(error.message || 'An error occurred.');
           setLoading(false);
         }
-      }else {
+      } else {
         const data = {
           firstname,
           lastname,
           email: userEmail,
           password: userPassword,
         };
+        
+        if (checkPassword(userPassword)) {
 
-        try {
-          setLoading(true);
-          const response = await uploadUserData(data);
-          setLoading(false);
-          toast.success('Action successful!');
-          
-          setUser({
-            id: response.existingUser?.id || response.user?.id,
-            email: response.existingUser?.email || response.user?.email,
-            role: response.existingUser?.role || response.user?.role,
-            token: response.existingUser?.token || response.user?.token,
-          });
+          try {
+            setLoading(true);
+            const response = await uploadUserData(data);
+            setLoading(false);
+            toast.success('Action successful!');
 
-          navigate('/');
-        } catch (error) {
-          console.error("Error uploading user data:", error);
-          toast.error(error.message || 'An error occurred.');
-          setLoading(false);
+            setUser({
+              id: response.existingUser?.id || response.user?.id,
+              email: response.existingUser?.email || response.user?.email,
+              role: response.existingUser?.role || response.user?.role,
+              token: response.existingUser?.token || response.user?.token,
+            });
+            navigate('/');
+            window.location.reload();
+          } catch (error) {
+            console.error("Error uploading user data:", error);
+            toast.error(error.message || 'An error occurred.');
+            setLoading(false);
+          }
         }
       }
     } else {
@@ -91,11 +91,9 @@ function App() {
   };
 
   const uploadUserData = async (data) => {
-    // let url = 'http://localhost:8000/login';
     let url = `${process.env.REACT_APP_BACKEND}/login`;
     if (action === "Sign Up") {
-      // url = 'http://localhost:8000/register';
-      let url = `${process.env.REACT_APP_BACKEND}/register`;
+      url = `${process.env.REACT_APP_BACKEND}/register`;
     }
 
     const response = await fetch(url, {
