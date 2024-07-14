@@ -12,7 +12,8 @@ function Submissions() {
         const fetchSubmissions = async () => {
             try {
                 const token = await localStorage.getItem('token');
-                const result = await axios.get('http://localhost:8000/submissions', {
+                // const result = await axios.get('http://localhost:8000/submissions', {
+                const result = await axios.get(`${process.env.REACT_APP_BACKEND}/submissions`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

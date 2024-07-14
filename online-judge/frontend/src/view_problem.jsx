@@ -34,7 +34,8 @@ int main() {
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                const result = await axios.get(`http://localhost:8000/get_problem/${id}`);
+                // const result = await axios.get(`http://localhost:8000/get_problem/${id}`);
+                const result = await axios.get(`${process.env.REACT_APP_BACKEND}/get_problem/${id}`);
                 set_problem_title(result.data.problem_title);
                 set_problem_statement(result.data.problem_statement);
                 set_sample_input(result.data.sample_input);
@@ -60,7 +61,8 @@ int main() {
         };
 
         try {
-            const { data } = await axios.post('http://localhost:8000/run', payload);
+            // const { data } = await axios.post('http://localhost:8000/run', payload);
+            const { data } = await axios.post(`${process.env.REACT_APP_BACKEND}/run`, payload);
             setOutput(data.output); // Update output state with fetched data
         } catch (error) {
             console.log(error.response);
@@ -82,7 +84,8 @@ int main() {
             };
 
             try {
-                const { data } = await axios.post('http://localhost:8000/run', payload);
+                // const { data } = await axios.post('http://localhost:8000/run', payload);
+                const { data } = await axios.post(`${process.env.REACT_APP_BACKEND}/run`, payload);
                 outputArray.push(data.output);
             } catch (error) {
                 console.log(error.response);
@@ -113,7 +116,8 @@ int main() {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:8000/submit_solution', submissionPayload, {
+            // await axios.post('http://localhost:8000/submit_solution', submissionPayload, {
+            await axios.post(`${process.env.REACT_APP_BACKEND}/submit_solution`, submissionPayload, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -255,13 +259,13 @@ int main() {
                     </div>
                 </div>
             </div>
-
             <div className="row mt-4">
                 <div className="col">
                     <Link to="/problem" className="btn btn-secondary">Go Back</Link>
                 </div>
             </div>
         </div>
+
     );
 }
 

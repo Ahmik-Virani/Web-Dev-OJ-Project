@@ -5,6 +5,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import logo from './assets/logo.png';
 import './index.css';
 import { useUser } from './UserContext';
+import dotenv from 'dotenv';
 
 function App() {
   const [action, setAction] = useState("Login");
@@ -63,9 +64,11 @@ function App() {
   };
 
   const uploadUserData = async (data) => {
-    let url = 'http://localhost:8000/login';
+    // let url = 'http://localhost:8000/login';
+    let url = `${process.env.REACT_APP_BACKEND}/login`;
     if (action === "Sign Up") {
-      url = 'http://localhost:8000/register';
+      // url = 'http://localhost:8000/register';
+      let url = `${process.env.REACT_APP_BACKEND}/register`;
     }
 
     const response = await fetch(url, {

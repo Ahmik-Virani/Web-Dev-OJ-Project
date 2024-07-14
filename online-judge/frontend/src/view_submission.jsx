@@ -10,7 +10,8 @@ const SubmissionDetail = () => {
   useEffect(() => {
     const fetchSubmission = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/submissions/${id}`, {
+        // const response = await fetch(`http://localhost:8000/submissions/${id}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/submissions/${id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -10,7 +10,8 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.get('http://localhost:8000/logout', { withCredentials: true });
+      // await axios.get('http://localhost:8000/logout', { withCredentials: true });
+      await axios.get(`${process.env.REACT_APP_BACKEND}/logout`, { withCredentials: true });
       navigate('/');
     } catch (error) {
       console.log("Error logging out: " + error);

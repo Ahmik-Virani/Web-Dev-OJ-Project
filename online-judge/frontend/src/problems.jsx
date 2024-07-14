@@ -16,7 +16,8 @@ function Problems() {
     useEffect(() => {
         const fetchProblems = async () => {
             try {
-                const result = await axios.get('http://localhost:8000/problem');
+                // const result = await axios.get('http://localhost:8000/problem');
+                const result = await axios.get(`${process.env.REACT_APP_BACKEND}/problem`);
                 setProblems(result.data);
             } catch (error) {
                 console.error('Error fetching problems: ', error);
@@ -28,7 +29,8 @@ function Problems() {
 
     const handleDelete = (id) => {
         try {
-            axios.delete('http://localhost:8000/delete_problem/' + id);
+            // axios.delete('http://localhost:8000/delete_problem/' + id);
+            axios.delete(`${process.env.REACT_APP_BACKEND}/delete_problem/${id}`);
             window.location.reload();
         } catch (error) {
             console.log("Error deleting problem : " + error);

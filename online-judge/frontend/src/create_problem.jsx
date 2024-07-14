@@ -41,7 +41,8 @@ function Create_Problems() {
         e.preventDefault();
         const formatted_tags = selected_tags.map(tag => ({ tag }));
         try {
-            await axios.post("http://localhost:8000/create_problem", { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
+            // await axios.post("http://localhost:8000/create_problem", { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
+            await axios.post(`${process.env.REACT_APP_BACKEND}/create_problem`, { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
             console.log("Added successfully");
             navigate('/problem');
         } catch (error) {

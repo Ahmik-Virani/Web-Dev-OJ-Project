@@ -33,7 +33,8 @@ function Update_Problems() {
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                const result = await axios.get(`http://localhost:8000/get_problem/${id}`);
+                // const result = await axios.get(`http://localhost:8000/get_problem/${id}`);
+                const result = await axios.get(`${process.env.REACT_APP_BACKEND}/get_problem/${id}`);
                 set_problem_title(result.data.problem_title);
                 set_problem_statement(result.data.problem_statement);
                 set_sample_input(result.data.sample_input);
@@ -59,7 +60,8 @@ function Update_Problems() {
         e.preventDefault();
         const formatted_tags = selected_tags.map(tag => ({ tag }));
         try {
-            const response = await axios.put(`http://localhost:8000/update_problem/${id}`, { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
+            // const response = await axios.put(`http://localhost:8000/update_problem/${id}`, { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND}/update_problem/${id}`, { problem_title, problem_statement, sample_input, sample_output, test_cases, difficulty, selected_tags: formatted_tags });
             console.log("Updated successfully:", response.data);
             navigate('/problem');
         } catch (error) {
