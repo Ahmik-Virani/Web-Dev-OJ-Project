@@ -30,7 +30,34 @@ function App() {
 
   const handleSubmit = async () => {
     if ((action === "Sign Up" && firstname && lastname && userEmail && userPassword) || (action === "Login" && userEmail && userPassword)) {
-      if (action === 'Login' || checkPassword(userPassword)) {
+      if (action === 'Login') {
+        const data = {
+          // firstname,
+          // lastname,
+          email: userEmail,
+          password: userPassword,
+        };
+
+        try {
+          setLoading(true);
+          const response = await uploadUserData(data);
+          setLoading(false);
+          toast.success('Action successful!');
+          
+          setUser({
+            id: response.existingUser?.id || response.user?.id,
+            email: response.existingUser?.email || response.user?.email,
+            role: response.existingUser?.role || response.user?.role,
+            token: response.existingUser?.token || response.user?.token,
+          });
+
+          navigate('/home');
+        } catch (error) {
+          console.error("Error uploading user data:", error);
+          toast.error(error.message || 'An error occurred.');
+          setLoading(false);
+        }
+      }else {
         const data = {
           firstname,
           lastname,
@@ -51,7 +78,7 @@ function App() {
             token: response.existingUser?.token || response.user?.token,
           });
 
-          navigate('/home');
+          navigate('/');
         } catch (error) {
           console.error("Error uploading user data:", error);
           toast.error(error.message || 'An error occurred.');
