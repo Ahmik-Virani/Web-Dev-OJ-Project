@@ -11,13 +11,18 @@ import cors from 'cors';
 import generateFile from './compiler_codes/generateFile.js';
 import executeCpp from './compiler_codes/executeCpp.js';
 import generateInputFile from './compiler_codes/generateInputFile.js';
+import executeJava from './compiler_codes/executeJava.js'
+import executeC from './compiler_codes/executeC.js'
+import executePy from './compiler_codes/executePy.js'
+
 
 const app = express();
 dotenv.config();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  // origin: 'http://localhost:5173',
+  origin: 'https://www.codecraftbyahmik.online',
   credentials: true,
 }));
 
@@ -249,7 +254,27 @@ app.post('/run', async (req, res) => {
   try {
     const filePath = await generateFile(language, code);
     const inputPath = await generateInputFile(input);
-    const output = await executeCpp(filePath, inputPath);
+    // const output = await executeCpp(filePath, inputPath);
+    let output = '';
+    switch (language) {
+      case 'cpp':
+        output = await executeCpp(filePath, inputPath);
+        break;
+      case 'java':
+        output = await executeJava(filePath, inputPath);
+        break;
+      case 'py':
+        output = await executePy(filePath, inputPath);
+        break;
+      case 'c':
+        output = await executeC(filePath, inputPath);
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: `Unsupported language: ${language}`,
+        });
+    }
     res.send({ filePath, output, inputPath });
   } catch (error) {
     console.log(error);

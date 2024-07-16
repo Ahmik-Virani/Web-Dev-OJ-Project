@@ -1,11 +1,12 @@
 # Alpine is light weight version of node:18, will remove unnecessary stuff
 FROM node:18-alpine
+# FROM --platform=linux/amd64 node:11.15
 
 # Working directory of container, work in folder named app
 # Never use only /
 WORKDIR /app
 
-RUN apk update && apk add --no-cache g++
+RUN apk update && apk add --no-cache g++ python3
 
 # Accepts local (what code to copy) then container (where to copy)
 # . means give location of root directory

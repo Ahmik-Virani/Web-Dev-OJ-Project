@@ -16,6 +16,7 @@ function View_Problem() {
     const [sample_output, set_sample_output] = useState('');
     const [test_cases, set_test_cases] = useState([initialTestCase]);
     const [verdict, set_verdict] = useState('');
+    const [lang, set_lang] = useState('cpp')
 
     const [code, setCode] = useState(`#include <iostream> 
 using namespace std;
@@ -50,12 +51,16 @@ int main() {
         fetchProblem();
     }, [id]);
 
+    const handleLanguageChange = (event) => {
+        set_lang(event.target.value);
+      };
+
     const handleRun = async () => {
         // Reset output state to clear previous output
         setOutput('');
 
         const payload = {
-            language: 'cpp',
+            language: lang,
             code,
             input
         };
@@ -78,7 +83,7 @@ int main() {
 
         for (let i = 0; i < test_cases.length; i++) {
             const payload = {
-                language: 'cpp',
+                language: lang,
                 code,
                 input: test_cases[i].input,
             };
@@ -180,7 +185,7 @@ int main() {
                 <div className="col-lg-6">
                     <div className="card">
                         <div className="card-body">
-                            <select className="form-control mb-3">
+                            <select className="form-control mb-3" onChange={handleLanguageChange}>
                                 <option value='cpp'>C++</option>
                                 <option value='c'>C</option>
                                 <option value='py'>Python</option>
@@ -191,7 +196,7 @@ int main() {
                                 <div className="bg-light shadow-md w-100 mb-4" style={{ maxWidth: '600px', height: '300px', overflowY: 'auto' }}>
                                     <Editor
                                         height="300px"
-                                        language="cpp"
+                                        language={lang}
                                         theme="vs-dark"
                                         value={code}
                                         onChange={(value) => setCode(value)}
