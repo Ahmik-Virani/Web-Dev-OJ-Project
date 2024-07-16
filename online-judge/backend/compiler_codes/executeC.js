@@ -28,7 +28,7 @@ const executeC = (filePath, inputPath) => {
                 } else {
                     // Cleanup the compiled and temporary files
                     exec(
-                        `rm '${outPath}' && rm '${inputPath}'`,
+                        `rm '${outPath}' && rm '${inputPath}' && rm '${filePath}'`,
                         (cleanupError, cleanupStdout, cleanupStderr) => {
                             if (cleanupError) {
                                 reject(cleanupError);

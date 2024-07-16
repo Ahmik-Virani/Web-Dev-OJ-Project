@@ -22,7 +22,18 @@ const executePy = (filePath, inputPath) => {
                 } else if (stderr) {
                     reject(stderr);
                 } else {
-                    resolve(stdout);
+                    exec(
+                        `rm '${inputPath}' && rm '${filePath}'`,
+                        (cleanupError, cleanupStdout, cleanupStderr) => {
+                            if (cleanupError) {
+                                reject(cleanupError);
+                            } else if (cleanupStderr) {
+                                reject(cleanupStderr);
+                            } else {
+                                resolve(stdout);
+                            }
+                        }
+                    );
                 }
             }
         );
