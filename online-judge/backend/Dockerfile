@@ -6,7 +6,7 @@ FROM node:18-alpine
 # Never use only /
 WORKDIR /app
 
-RUN apk update && apk add --no-cache g++ python3
+RUN apk update && apk add --no-cache g++ python3 openjdk11
 
 # Accepts local (what code to copy) then container (where to copy)
 # . means give location of root directory
