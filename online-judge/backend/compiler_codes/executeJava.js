@@ -27,7 +27,7 @@ const executeJava = (filePath, inputPath) => {
                 } else {
                     // Cleanup the compiled and temporary files
                     exec(
-                        `rm '${path.join(outputPath, `${className}.class`)}' && rm '${inputPath}'`,
+                        `rm '${filePath}' && rm '${inputPath}'`,
                         (cleanupError, cleanupStdout, cleanupStderr) => {
                             if (cleanupError) {
                                 reject(cleanupError);

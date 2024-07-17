@@ -72,6 +72,14 @@ cout << "Hello World!";
                             
 return 0; 
 }`)
+        } else if(event.target.value === 'java'){
+            setCode(`class Solution
+{
+    public static void main(String []args)
+    {
+        System.out.println("Hello World");
+    }
+};`)
         }
       };
 
