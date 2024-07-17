@@ -53,6 +53,26 @@ int main() {
 
     const handleLanguageChange = (event) => {
         set_lang(event.target.value);
+        if(event.target.value === 'c'){
+            setCode(`#include <stdio.h>
+
+int main() {
+   printf("Hello, World!");
+   
+   return 0;
+}`)
+        } else if(event.target.value === 'py'){
+            setCode(`print('Hello, world!')`)
+        } else if(event.target.value === 'cpp'){
+            setCode(`#include <iostream> 
+using namespace std;
+                      
+int main() { 
+cout << "Hello World!"; 
+                            
+return 0; 
+}`)
+        }
       };
 
     const handleRun = async () => {
