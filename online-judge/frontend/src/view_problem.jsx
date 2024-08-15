@@ -131,7 +131,10 @@ return 0;
             let actualOutput = outputArray[i].replace(/\s+/g, ' ').trim();
             let expectedOutput = test_cases[i].output.replace(/\s+/g, ' ').trim();
 
-            if (actualOutput !== expectedOutput) {
+            if(actualOutput === 'Time Limit Exceeded'){
+                verdict = "Time Limit Exceeded in test case " + (i + 1);
+                break;
+            } else if (actualOutput !== expectedOutput) {
                 verdict = "Wrong answer in test case " + (i + 1);
                 break;
             }

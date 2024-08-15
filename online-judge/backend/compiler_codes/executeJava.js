@@ -18,7 +18,7 @@ const executeJava = (filePath, inputPath) => {
 
     return new Promise((resolve, reject) => {
         exec(
-            `javac '${filePath}' -d '${outputPath}' && cd '${outputPath}' && java '${className}' < '${inputPath}'`,
+            `java '${filePath}' -d '${outputPath}'`,
             (error, stdout, stderr) => {
                 if (error) {
                     reject(error);

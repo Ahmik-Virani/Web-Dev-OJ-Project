@@ -128,8 +128,8 @@ app.post('/login', async (req, res) => {
     const options = {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
       httpOnly: true, 
-      secure: false, 
-      sameSite: 'Lax', 
+      secure: true, 
+      sameSite: 'none', 
     };
 
     res.cookie("token", token, options).status(200).json({
@@ -243,6 +243,7 @@ app.delete('/delete_problem/:id', async (req, res) => {
 
 app.post('/run', async (req, res) => {
   const { language = 'cpp', code, input } = req.body;
+  console.log(language);
 
   if (code === undefined) {
     return res.status(400).json({
@@ -254,20 +255,29 @@ app.post('/run', async (req, res) => {
   try {
     const filePath = await generateFile(language, code);
     const inputPath = await generateInputFile(input);
-    // const output = await executeCpp(filePath, inputPath);
+
+    const executeWithTimeout = (executionPromise, timeout) => {
+      return Promise.race([
+        executionPromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Time Limit Exceeded')), timeout)
+        )
+      ]);
+    };
+
     let output = '';
     switch (language) {
       case 'cpp':
-        output = await executeCpp(filePath, inputPath);
+        output = await executeWithTimeout(executeCpp(filePath, inputPath), 2000);
         break;
       case 'java':
-        output = await executeJava(filePath, inputPath);
+        output = await executeWithTimeout(executeJava(filePath, inputPath), 2000);
         break;
       case 'py':
-        output = await executePy(filePath, inputPath);
+        output = await executeWithTimeout(executePy(filePath, inputPath), 2000);
         break;
       case 'c':
-        output = await executeC(filePath, inputPath);
+        output = await executeWithTimeout(executeC(filePath, inputPath), 2000);
         break;
       default:
         return res.status(400).json({
@@ -275,16 +285,22 @@ app.post('/run', async (req, res) => {
           message: `Unsupported language: ${language}`,
         });
     }
+
     res.send({ filePath, output, inputPath });
   } catch (error) {
     console.log(error);
+    if (error.message === 'Time Limit Exceeded') {
+      return res.status(200).json({
+        success: true,
+        output: 'Time Limit Exceeded',
+      });
+    }
     res.status(500).json({
       success: false,
-      message: "Error" + error.message,
-    })
+      message: "Error: " + error.message,
+    });
   }
-
-})
+});
 
 app.post('/submit_solution', authenticateToken, async (req, res) => {
   try {
